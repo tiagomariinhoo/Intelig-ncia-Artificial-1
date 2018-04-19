@@ -69,6 +69,9 @@ bool check2(State b){
 }
 
 void dfs(State state, int x, int y, int h){
+	if(it == 1000000){
+		exit(0);
+	}
 	
 	if(check2(state)) return ;
 	
@@ -165,23 +168,40 @@ int main(){
 		}
 	}
 	
-	// DFS
-	// dfs(state, x, y, 0);
+	cout << "Escolha a opcao: " << endl;
+	cout << "1 - Dfs" << endl;
+	cout << "2 - Bfs" << endl;
+	cout << "3 - iDfs " << endl;
+	int op;
+	cin >> op;
+	cout << "Opcao selecionada: " << op << endl;
+	cout << "Rodando..." << endl << endl;
 
-	//BFS
+	if(op == 1){
+	dfs(state, x, y, 0);
+	} else if(op == 2){
 	bfs(state, x, y, 0);
-
-
-	//ITERATIVE DFS
-	// iterativeDfs(state, x, y, 0, 5);
-	// while(!fila.empty()){
-	// 	State atual = fila.front().F;
-	// 	int xx = fila.front().S.F;
-	// 	int yy = fila.front().S.S.F;
-	// 	int hh = fila.front().S.S.S;	
-	// 	fila.pop();
-	// 	iterativeDfs(atual, xx, yy, hh, hh*2);
-	// }
+	} else {
+		iterativeDfs(state, x, y, 0, 5);
+		while(!fila.empty()){
+			State atual = fila.front().F;
+			int xx = fila.front().S.F;
+			int yy = fila.front().S.S.F;
+			int hh = fila.front().S.S.S;	
+			fila.pop();
+			iterativeDfs(atual, xx, yy, hh, hh*2);
+		}
+	}
 
 	return 0;
 }
+
+// 2 4 9
+// 8 5 3
+// 1 7 6
+// 3
+
+// 2 9 3
+// 1 8 5
+// 4 7 6
+// 1
