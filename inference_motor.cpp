@@ -2,14 +2,17 @@
 using namespace std;
 
 #define FILE "test.txt"
+#define NEWFILE "test1.txt"
 
 const string SE = "SE";
 const string ENTAO = "ENTAO";
 const string E = "E";
 
 vector<pair<set<string>, set<string> > > conditions;
-set<string> allSet;
+unordered_set<string> allSet;
 set<string> conclusionSet;
+
+void askQuestions();
 
 string trim(string str){
     while(str.back() == ' ' || str.back() == '\n')        
@@ -36,7 +39,11 @@ int max(int a, int b){
     return a < b ? b : a;
 }
 
-void getDatabase(){
+void testCase(){
+
+	conditions.clear();
+    allSet.clear();
+	conclusionSet.clear();
 
     ifstream database(FILE);
     string currentLine;
@@ -66,6 +73,8 @@ void getDatabase(){
     }
 
     database.close();
+
+    askQuestions();
 }
 
 void checkCondition(string condition){
@@ -109,7 +118,7 @@ void askQuestions(){
             removeConclusion(i);
         }
     }
-    cout << "Conclusion: "
+    cout << "Conclusion: ";
     if(conclusionSet.empty()){
         cout << "No conclusions could be taken" << endl;
         return;
@@ -125,7 +134,9 @@ void askQuestions(){
 
 bool isFileEmpty(){
     ifstream database(FILE);
-    return (database.peek() == ifstream::traits_type::eof());
+    bool ans = (database.peek() == ifstream::traits_type::eof());
+    database.close();
+    return ans;
 }
 
 void addRule(){
@@ -170,19 +181,36 @@ void removeRule(){
     cin >> rem;
     string currentLine;
     ifstream fin(FILE);
-    ofstream database(FILE);
-    
+    ofstream database(NEWFILE);
+    /*
     for(int i = 1; i <= rem; i++){
         getline(fin,currentLine);
     }
-    currentLine.replace(currentLine.begin(), currentLine.end(), "");
-    database << currentLine;
+    */
+    for(int i = 1; getline(fin,currentLine); i++){
+    	if(currentLine == "") i--;
+    	if(i == rem) {
+    		database << "";
+    	}
+    	else{
+    		database << currentLine << endl;
+    	}
+    }
+    fin.close();
+    database.close();
+    if(!remove(FILE))
+    	if(!rename(NEWFILE, FILE))
+    		cout << "Rule successfully removed" << endl;
+    //currentLine.replace(currentLine.begin(), currentLine.end(), "");
+    //database << currentLine << endl;
+
 }
 
 int main(){
     
     int menuOpt;
     do{
+    	cout << "---------------" << endl;
         cout << "Menu:" << endl;
         cout << "0 - Exit" << endl;
         cout << "1 - List Rules" << endl;
@@ -198,11 +226,7 @@ int main(){
         else if(menuOpt == 3)
             removeRule();
         else if(menuOpt == 4){
-            conditions.clear();
-            allSet.clear();
-            conclusionSet.clear();
-            getDatabase();
-            askQuestions();
+            testCase();
         }
     }while(menuOpt);
     
