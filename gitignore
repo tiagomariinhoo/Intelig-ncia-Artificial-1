@@ -1,4 +1,7 @@
 
+# Created by https://www.gitignore.io/api/eclipse
+
+### Eclipse ###
 
 .metadata
 bin/
@@ -23,9 +26,6 @@ local.properties
 
 # CDT-specific (C/C++ Development Tooling)
 .cproject
-
-# CDT- autotools 
-.autotools
 
 # Java annotation processor (APT)
 .factorypath
@@ -52,3 +52,16 @@ local.properties
 .cache-main
 .scala_dependencies
 .worksheet
+
+### Eclipse Patch ###
+# Eclipse Core		
+.project
+
+# JDT-specific (Eclipse Java Development Tools)		
+.classpath
+
+# Annotation Processing
+.apt_generated
+
+
+# End of https://www.gitignore.io/api/eclipse
