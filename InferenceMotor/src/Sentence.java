@@ -3,17 +3,17 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class Sentence {
-	List<String> conditions;
-	List<String> conclusions;
+	private String wholeCondition;
+	private List<String> conditions;
+	private List<String> conclusions;
 	
-	public Sentence(String line) {
-		line = line.replace("SE", "");
-		String sentence[] = line.split("ENTAO");
-		
-		conditions = Arrays.asList(sentence[0].split("E"));
+	public Sentence(String cond, String concl) {
+
+		wholeCondition = (cond.trim());
+		conditions = Arrays.asList(cond.split("E"));
 		conditions = conditions.stream().map(String::trim).collect(Collectors.toList());
 
-		conclusions = Arrays.asList(sentence[1].split("E"));
+		conclusions = Arrays.asList(concl.split("E"));
 		conclusions = conclusions.stream().map(String::trim).collect(Collectors.toList());
 	}
 	
@@ -25,8 +25,19 @@ public class Sentence {
 		else return null;
 	}
 	
+	public boolean checkConclusion(String concl) {
+		List<String> aux = Arrays.asList(concl.split("E"));
+		aux = aux.stream().map(String::trim).collect(Collectors.toList());
+		if(conclusions.equals(aux)) return true;
+		else return false;
+	}
+	
 	public List<String> getConditions() {
 		return conditions;
-	}	
+	}
+
+	public String getWholeCondition() {
+		return wholeCondition;
+	}
 	
 }

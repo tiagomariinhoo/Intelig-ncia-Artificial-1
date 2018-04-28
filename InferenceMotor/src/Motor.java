@@ -6,6 +6,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Scanner;
@@ -15,12 +16,13 @@ public class Motor {
 	static final String filepath = "test.txt";
 	static final String auxFilepath = "testAux.txt";
 	static Scanner scan = new Scanner(System.in);
-	static int answer;
+	static boolean concDisplay = false; 
 	static List<Sentence> sentences = new ArrayList<>();
 	static List<String> atoms = new ArrayList<>();
 	static Set<String> conclusions = new HashSet<>();
 	
 	public static void main(String[] args) {
+		int answer = 1;
 		do {
 			try {
 				sentences.clear();
@@ -33,6 +35,7 @@ public class Motor {
 		        System.out.println("2 - Add Rule");
 		        System.out.println("3 - Remove Rule");
 		        System.out.println("4 - Test Case");
+		        System.out.println("5 - Toggle step-by-step conclusions");
 		        System.out.print("Input: ");
 		        answer = scan.nextInt();
 		        scan.nextLine();
@@ -46,6 +49,11 @@ public class Motor {
 		        	readDatabase();
 		        	askQuestions();
 		        }
+		        else if(answer == 5) {
+		        	if(concDisplay) System.out.println("Step-by-step conclusions turned off");
+		        	else System.out.println("Step-by-step conclusions turned on");
+		        	concDisplay = !concDisplay;	
+		        }
 	        } catch (Exception e) {
 	        	System.err.println("Error - Please confirm the data entered is valid and that the file \"test.txt\" exists");
 			}
@@ -55,11 +63,13 @@ public class Motor {
 		BufferedReader reader = new BufferedReader(new FileReader(filepath));
 		String line = reader.readLine();
 		int i = 1;
+		System.out.println("Rules: ");
 		while(line != null) {
 			System.out.println(i+" - "+line);
 			line = reader.readLine();
 			i++;
 		}
+		if(i == 1) System.out.println("No rules found!"); 
 		reader.close();
 	}
 	public static void readDatabase() throws IOException {
@@ -68,9 +78,13 @@ public class Motor {
 		Set<String> auxAtoms = new HashSet<>();
 		while(line != null) {
 			if(!line.isEmpty()) {
-				Sentence sentence = new Sentence(line);
-				sentences.add(sentence);
-				auxAtoms.addAll(sentence.getConditions());
+				String sent[] = line.replace("SE", "").split("ENTAO");
+				String conds[] = sent[0].split("OU");
+				for(int i = 0; i < conds.length; i++) {
+					Sentence sentence = new Sentence(conds[i], sent[1]);
+					sentences.add(sentence);
+					auxAtoms.addAll(sentence.getConditions());
+				}
 			}
 			line = reader.readLine();
 		}
@@ -83,7 +97,7 @@ public class Motor {
 		
 		System.out.print("New Rule: ");
 		String line = scan.nextLine();
-		while(!line.matches("SE .+ ENTAO .+")) {
+		while(!line.matches("SE .+ ENTAO [^(OU)]+")) {
 			System.out.println("Unnacceptable Rule, try again!\nNew Rule:");
 			line = scan.nextLine();
 		}
@@ -121,25 +135,49 @@ public class Motor {
 				checkTrue(cond);
 			}
 		}
-		Object[] aux = conclusions.toArray();
-		for(int i = 0; i < conclusions.size(); i++) {
-			if(i != 0) System.out.print(" E ");
-			System.out.print(aux[i]);
+		System.out.println("Conclusions:");
+		if(conclusions.isEmpty()) System.out.println("No conclusions could be taken");
+		else printAux(conclusions);
+	}
+	
+	public static void removeQuestions(String cond) {
+		for(int i = 0; i < sentences.size(); i++) {
+			//if you say A is true, then there's no reason to ask if C is true if C only implies A
+			if(sentences.get(i).checkConclusion(cond)) {
+				sentences.remove(i);
+				atoms.remove(cond);
+			}
 		}
-		System.out.println();
 	}
 	
 	public static void checkTrue(String cond) {
+		//removes C => A from sentences, if A was already said to be true
+		removeQuestions(cond);
 		for(int i = 0; i < sentences.size(); i++) {
 			Sentence sent = sentences.get(i);
 			List<String> concl = sent.validateCondition(cond);
 			if(concl != null) {
+				List<String> aux = new ArrayList<>();
+				concl.forEach(f -> {if(conclusions.add(f)) aux.add(f);});					
+				if(concDisplay) {
+					System.out.print(sent.getWholeCondition()+" => ");
+					printAux(aux);
+				}
 				conclusions.addAll(concl);
 				sentences.remove(sent);
 				atoms.removeAll(conclusions);
 				concl.forEach(j -> checkTrue(j));
 			}
 		}
+	}
+	
+	private static void printAux(Collection<String> aux) {
+		String sep = "";
+		for(String c : aux) {
+			System.out.print(sep + c);
+			sep = " E ";
+		}
+		System.out.println();
 	}
 	
 }
