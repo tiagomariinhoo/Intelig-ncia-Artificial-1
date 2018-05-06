@@ -10,6 +10,7 @@ public class Main {
 	static List<State> pd = new ArrayList<State>();
 	static List<ForBfs> fila = new ArrayList<ForBfs>();
 	static int it = 0;
+	static boolean achou = false;
 	static int[] dx = {0, 1, 0, -1};
 	static int[] dy = {1, 0, -1, 0};
 	
@@ -40,13 +41,15 @@ public class Main {
 	}
 	
 	static void dfs(State state, int x, int y, int h) {
+		if(achou == true) return ;
 		if(check2(state)) return ;
 		
 		if(check(state)) {
 			System.out.println("Achou dfs!");
 			System.out.println("Iteracoes: " + it);
 			System.out.println("Altura: " + h);
-			System.exit(0);
+			achou = true;
+			return ;
 		}
 		pd.add(state);
 		it++;
@@ -72,12 +75,14 @@ public class Main {
 	}
 	
 	static void iterativeDfs(State state, int x, int y, int h, int maximo) {
+		if(achou == true) return ;
 		if(check2(state)) return ;
 		if(check(state)) {
 			System.out.println("Achou iterativeDfs!");
 			System.out.println("Iteracoes: " + it);
 			System.out.println("Altura: " + h);
-			System.exit(0);
+			achou = true;
+			return ;
 		}
 		if(h == maximo) {
 			ForBfs a = new ForBfs(x, y, h);
@@ -152,7 +157,7 @@ public class Main {
 						System.out.println("Achou bfs!");
 						System.out.println("Iteracoes: " + it);
 						System.out.println("Altura: " + (hh + 1));
-						System.exit(0);
+						return ;
 					} else if(!check2(aux2)){
 						ForBfs aux3 = new ForBfs(xxx, yyy, hh+1);
 						for(int j=0;j<3;j++) {
@@ -186,21 +191,17 @@ public class Main {
 		}
 
 		
-		System.out.println("Escolha a opcao: ");
-		System.out.println("1 - Dfs");
-		System.out.println("2 - Bfs");
-		System.out.println("3 - iterativeDfs");
-		Integer op;
-		op = scan.nextInt();
-		
-		System.out.println("Opcao selecionada: " + op.toString());
-		System.out.println("Rodando...");
-		
-		if(op == 1) {
-			dfs(state, x, y, 0);	
-		} else if(op == 2) {
+		System.out.println("Rodando dfs...");
+			dfs(state, x, y, 0);
+			pd.clear();
+			achou = false;
+		System.out.println(" ---------- ");
+		System.out.println("Rodando bfs...");
 			bfs(state, x, y, 0);
-		} else {
+			pd.clear();
+			achou = false;
+		System.out.println(" ---------- ");
+		System.out.println("Rodando iterative Dfs...");
 			iterativeDfs(state, x, y, 0, 5);
 			while(!fila.isEmpty()) {
 				State atual = new State();
@@ -215,9 +216,5 @@ public class Main {
 				fila.remove(0);
 				iterativeDfs(atual, xx, yy, hh, hh*2);
 			}
-		}
-	
-		
 	}
-
 }
