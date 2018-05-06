@@ -94,11 +94,11 @@ public class Motor {
 	
 	public static void addRule() throws IOException {
 		BufferedWriter output = new BufferedWriter(new FileWriter(filepath, true));
-		
+		System.out.println("Rule Format: SE ... ENTAO ...");
 		System.out.print("New Rule: ");
 		String line = scan.nextLine();
 		while(!line.matches("SE .+ ENTAO [^(OU)]+")) {
-			System.out.println("Unnacceptable Rule, try again!\nNew Rule:");
+			System.out.println("Unacceptable Rule, try again!\nNew Rule:");
 			line = scan.nextLine();
 		}
 		output.write(line+System.lineSeparator());
