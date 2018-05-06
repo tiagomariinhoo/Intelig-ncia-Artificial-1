@@ -18,18 +18,19 @@
     - 0 para **sair do programa**;
     
     - 1 para **listar as regras atuais**
-    
+      - Regras são guardadas no arquivo test.txt na pasta InferenceMotor
+      
     - 2 para **adicionar uma nova regra**
-    - O programa pedirá uma nova regra, caso a regra não siga os padrões a serem estabelecidos neste documento, ela não será aceita e outra regra será pedida;
+      - O programa pedirá uma nova regra, caso a regra não siga os padrões a serem estabelecidos neste documento, ela não será aceita e outra regra será pedida;
 
     - 3 para **deletar uma regra**
-    - O programa listará todas as regras e perguntará qual deve ser removida, deve ser digitado o **número da linha** da regra a ser removida de acordo com as linhas impressas.
+      - O programa listará todas as regras e perguntará qual deve ser removida, deve ser digitado o **número da linha** da regra a ser removida de acordo com as linhas impressas.
     
     - 4 para **entrar um caso de teste para as regras atuais**
-    - Responder às perguntas necessárias para que a base de dados chegue a alguma conclusão.
+      - Responder às perguntas necessárias para que a base de dados chegue a alguma conclusão.
     
     - 5 para **ligar ou desligar o modo de explicação de conclusões passo-a-passo** 
-    - A cada resposta, as conclusões feitas a partir dela serão mostradas.
+      - A cada resposta, as conclusões feitas a partir dela serão mostradas.
 
 - Formato das Regras:
   - "SE", "ENTAO", "OU" e "E" são palavras reservadas, ou seja, regras não podem usá-las como variáveis nem partes de nomes de variáveis;
