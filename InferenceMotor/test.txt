@@ -1,0 +1,2 @@
+SE a ENTAO b
+SE c ENTAO a
