@@ -196,11 +196,13 @@ public class Main {
 			pd.clear();
 			achou = false;
 		System.out.println(" ---------- ");
+		it = 0;
 		System.out.println("Rodando bfs...");
 			bfs(state, x, y, 0);
 			pd.clear();
 			achou = false;
 		System.out.println(" ---------- ");
+		it = 0;
 		System.out.println("Rodando iterative Dfs...");
 			iterativeDfs(state, x, y, 0, 5);
 			while(!fila.isEmpty()) {
