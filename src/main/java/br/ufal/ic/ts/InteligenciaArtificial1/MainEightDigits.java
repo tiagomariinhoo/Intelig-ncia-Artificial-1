@@ -1,11 +1,11 @@
-package first;
+package br.ufal.ic.ts.InteligenciaArtificial1;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
 
-public class Main {
+public class MainEightDigits {
 	
 	static List<State> pd = new ArrayList<State>();
 	static List<ForBfs> fila = new ArrayList<ForBfs>();
@@ -174,7 +174,7 @@ public class Main {
 		}
 	}
 	
-	public static void main(String[] args) {
+	public static void MainEightDigits(String[] args) {
 		int x = 0, y = 0;
 		State state = new State();
 		Scanner scan = new Scanner(System.in);

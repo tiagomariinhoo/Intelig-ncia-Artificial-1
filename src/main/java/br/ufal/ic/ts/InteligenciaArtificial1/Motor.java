@@ -1,9 +1,13 @@
+package br.ufal.ic.ts.InteligenciaArtificial1;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -13,53 +17,34 @@ import java.util.Scanner;
 import java.util.Set;
 
 public class Motor {
-	static final String filepath = "test.txt";
-	static final String auxFilepath = "testAux.txt";
-	static Scanner scan = new Scanner(System.in);
-	static boolean concDisplay = false; 
-	static List<Sentence> sentences = new ArrayList<>();
-	static List<String> atoms = new ArrayList<>();
-	static Set<String> conclusions = new HashSet<>();
+	private String filepath;
+	private String auxFilepath;
+	private boolean concDisplay = false; 
+	private List<Sentence> sentences = new ArrayList<>();
+	private List<String> atoms = new ArrayList<>();
+	private Set<String> conclusions = new HashSet<>();
+	private BufferedReader reader;
+	private BufferedReader auxReader;
 	
-	public static void main(String[] args) {
-		int answer = 1;
-		do {
-			try {
-				sentences.clear();
-				atoms.clear();
-				conclusions.clear();
-				System.out.println("---------------");
-		        System.out.println("Menu:");
-		        System.out.println("0 - Exit");
-		        System.out.println("1 - List Rules");
-		        System.out.println("2 - Add Rule");
-		        System.out.println("3 - Remove Rule");
-		        System.out.println("4 - Test Case");
-		        System.out.println("5 - Toggle step-by-step conclusions");
-		        System.out.print("Input: ");
-		        answer = scan.nextInt();
-		        scan.nextLine();
-		        if(answer == 1)
-		        	listRules();
-		        else if(answer == 2)
-		        	addRule();
-		        else if(answer == 3)
-		        	deleteRule();
-		        else if(answer == 4) {
-		        	readDatabase();
-		        	askQuestions();
-		        }
-		        else if(answer == 5) {
-		        	if(concDisplay) System.out.println("Step-by-step conclusions turned off");
-		        	else System.out.println("Step-by-step conclusions turned on");
-		        	concDisplay = !concDisplay;	
-		        }
-	        } catch (Exception e) {
-	        	System.err.println("Error - Please confirm the data entered is valid and that the file \"test.txt\" exists");
-			}
-		}while(answer != 0);
+	public Motor(String filepath) throws FileNotFoundException {
+		this.filepath = filepath;
+		String[] stringArray = filepath.split("\\.");
+		String auxFilepath;
+		if(stringArray.length == 1) {
+			auxFilepath = stringArray[0] + "Aux";
+		} else {
+			auxFilepath = stringArray[0] + "Aux." + stringArray[1];
+		}
+		reader = new BufferedReader(new FileReader(filepath));
+		auxReader = new BufferedReader(new FileReader(filepath));
 	}
-	public static void listRules() throws IOException {
+	
+	public Motor(BufferedReader reader, BufferedReader auxReader) {
+		this.reader = reader;
+		this.auxReader = auxReader;
+	}
+	
+	public void listRules() throws IOException {
 		BufferedReader reader = new BufferedReader(new FileReader(filepath));
 		String line = reader.readLine();
 		int i = 1;
@@ -72,8 +57,8 @@ public class Motor {
 		if(i == 1) System.out.println("No rules found!"); 
 		reader.close();
 	}
-	public static void readDatabase() throws IOException {
-		BufferedReader reader = new BufferedReader(new FileReader(filepath));
+	public void readDatabase() throws IOException {
+		//BufferedReader reader = new BufferedReader(new FileReader(filepath));
 		String line = reader.readLine();
 		Set<String> auxAtoms = new HashSet<>();
 		while(line != null) {
@@ -92,7 +77,7 @@ public class Motor {
 		reader.close();
 	}
 	
-	public static void addRule() throws IOException {
+	public void addRule(Scanner scan) throws IOException {
 		BufferedWriter output = new BufferedWriter(new FileWriter(filepath, true));
 		System.out.println("Rule Format: SE ... ENTAO ...");
 		System.out.print("New Rule: ");
@@ -104,7 +89,7 @@ public class Motor {
 		output.write(line+System.lineSeparator());
 		output.close();
 	}
-	public static void deleteRule() throws IOException {
+	public void deleteRule(Scanner scan) throws IOException {
 		listRules();
 		System.out.print("Select rule to be removed: ");
 		int lineToRemove = scan.nextInt();
@@ -112,7 +97,7 @@ public class Motor {
 		
 		File input = new File(filepath);
 		File tempFile = new File(auxFilepath);
-		BufferedReader reader = new BufferedReader(new FileReader(input));
+		//reader = new BufferedReader(new FileReader(input));
 		PrintWriter writer = new PrintWriter(new FileWriter(tempFile));
 
 		String currentLine;
@@ -126,11 +111,12 @@ public class Motor {
 		if(tempFile.renameTo(input)) System.out.println("Rule successfully removed");
 	}
 	
-	public static void askQuestions() {
+	public void askQuestions(Scanner scan) {
+		
 		for(int i = 0; i < atoms.size(); i++) {
 			String cond = atoms.get(i);
 			System.out.println(cond+"?(Y/N)");
-			char answer = scan.nextLine().toUpperCase().charAt(0);
+			char answer =  scan.nextLine().toUpperCase().charAt(0);
 			if(answer == 'Y') {
 				checkTrue(cond);
 			}
@@ -140,7 +126,7 @@ public class Motor {
 		else printAux(conclusions);
 	}
 	
-	public static void removeQuestions(String cond) {
+	public void removeQuestions(String cond) {
 		for(int i = 0; i < sentences.size(); i++) {
 			//if you say A is true, then there's no reason to ask if C is true if C only implies A
 			if(sentences.get(i).checkConclusion(cond)) {
@@ -150,7 +136,7 @@ public class Motor {
 		}
 	}
 	
-	public static void checkTrue(String cond) {
+	public void checkTrue(String cond) {
 		//removes C => A from sentences, if A was already said to be true
 		removeQuestions(cond);
 		for(int i = 0; i < sentences.size(); i++) {
@@ -171,7 +157,7 @@ public class Motor {
 		}
 	}
 	
-	private static void printAux(Collection<String> aux) {
+	private void printAux(Collection<String> aux) {
 		String sep = "";
 		for(String c : aux) {
 			System.out.print(sep + c);

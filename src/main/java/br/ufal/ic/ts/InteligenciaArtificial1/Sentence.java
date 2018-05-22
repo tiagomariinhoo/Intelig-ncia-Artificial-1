@@ -1,3 +1,5 @@
+package br.ufal.ic.ts.InteligenciaArtificial1;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
