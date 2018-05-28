@@ -3,11 +3,9 @@ package br.ufal.ic.ts.InteligenciaArtificial1;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -24,24 +22,20 @@ public class Motor {
 	private List<String> atoms = new ArrayList<>();
 	private Set<String> conclusions = new HashSet<>();
 	private BufferedReader reader;
-	private BufferedReader auxReader;
 	
-	public Motor(String filepath) throws FileNotFoundException {
+	public Motor(String filepath) throws IOException {
 		this.filepath = filepath;
 		String[] stringArray = filepath.split("\\.");
-		String auxFilepath;
 		if(stringArray.length == 1) {
 			auxFilepath = stringArray[0] + "Aux";
 		} else {
 			auxFilepath = stringArray[0] + "Aux." + stringArray[1];
 		}
 		reader = new BufferedReader(new FileReader(filepath));
-		auxReader = new BufferedReader(new FileReader(filepath));
 	}
 	
-	public Motor(BufferedReader reader, BufferedReader auxReader) {
+	public Motor(BufferedReader reader) {
 		this.reader = reader;
-		this.auxReader = auxReader;
 	}
 	
 	public void listRules() throws IOException {

@@ -1,7 +1,6 @@
 package br.ufal.ic.ts.InteligenciaArtificial1;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
 
@@ -174,7 +173,7 @@ public class MainEightDigits {
 		}
 	}
 	
-	public static void MainEightDigits(String[] args) {
+	public static void main(String[] args) {
 		int x = 0, y = 0;
 		State state = new State();
 		Scanner scan = new Scanner(System.in);
@@ -190,33 +189,35 @@ public class MainEightDigits {
 			}
 		}
 
-		
 		System.out.println("Rodando dfs...");
-			dfs(state, x, y, 0);
-			pd.clear();
-			achou = false;
+		dfs(state, x, y, 0);
+		pd.clear();
+		achou = false;
 		System.out.println(" ---------- ");
+		
 		it = 0;
 		System.out.println("Rodando bfs...");
-			bfs(state, x, y, 0);
-			pd.clear();
-			achou = false;
+		bfs(state, x, y, 0);
+		pd.clear();
+		achou = false;
 		System.out.println(" ---------- ");
+		
 		it = 0;
 		System.out.println("Rodando iterative Dfs...");
-			iterativeDfs(state, x, y, 0, 5);
-			while(!fila.isEmpty()) {
-				State atual = new State();
-				for(int i=0;i<3;i++) {
-					for(int j=0;j<3;j++) {
-						atual.vec[i][j] = fila.get(0).vec[i][j];
-					}
+		iterativeDfs(state, x, y, 0, 5);
+		while(!fila.isEmpty()) {
+			State atual = new State();
+			for(int i=0;i<3;i++) {
+				for(int j=0;j<3;j++) {
+					atual.vec[i][j] = fila.get(0).vec[i][j];
 				}
-				int xx = fila.get(0).x;
-				int yy = fila.get(0).y;
-				int hh = fila.get(0).h;
-				fila.remove(0);
-				iterativeDfs(atual, xx, yy, hh, hh*2);
 			}
+			int xx = fila.get(0).x;
+			int yy = fila.get(0).y;
+			int hh = fila.get(0).h;
+			fila.remove(0);
+			iterativeDfs(atual, xx, yy, hh, hh*2);
+		}
+		scan.close();
 	}
 }
