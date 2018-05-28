@@ -3,6 +3,7 @@ package br.ufal.ic.ts.InteligenciaArtificial1;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -35,11 +36,12 @@ public class Motor {
 	}
 	
 	public Motor(BufferedReader reader) {
+		auxFilepath = System.getProperty("user.dir") + "/testAux.txt";
+		filepath = System.getProperty("user.dir") + "/test.txt";
 		this.reader = reader;
 	}
 	
 	public void listRules() throws IOException {
-		BufferedReader reader = new BufferedReader(new FileReader(filepath));
 		String line = reader.readLine();
 		int i = 1;
 		System.out.println("Rules: ");
@@ -49,10 +51,8 @@ public class Motor {
 			i++;
 		}
 		if(i == 1) System.out.println("No rules found!"); 
-		reader.close();
 	}
 	public void readDatabase() throws IOException {
-		//BufferedReader reader = new BufferedReader(new FileReader(filepath));
 		String line = reader.readLine();
 		Set<String> auxAtoms = new HashSet<>();
 		while(line != null) {
@@ -68,7 +68,6 @@ public class Motor {
 			line = reader.readLine();
 		}
 		atoms.addAll(auxAtoms);
-		reader.close();
 	}
 	
 	public void addRule(Scanner scan) throws IOException {
@@ -88,21 +87,23 @@ public class Motor {
 		System.out.print("Select rule to be removed: ");
 		int lineToRemove = scan.nextInt();
 		scan.nextLine();
-		
-		File input = new File(filepath);
-		File tempFile = new File(auxFilepath);
-		//reader = new BufferedReader(new FileReader(input));
-		PrintWriter writer = new PrintWriter(new FileWriter(tempFile));
-
-		String currentLine;
-
-		for(int i = 1; (currentLine = reader.readLine()) != null; i++)
-			if(i == lineToRemove) continue;
-			else writer.write(currentLine.trim() + System.getProperty("line.separator"));
-		writer.close();
-		reader.close();
-		input.delete();
-		if(tempFile.renameTo(input)) System.out.println("Rule successfully removed");
+		FileInputStream fis = new FileInputStream(filepath);
+		if(fis.read() != -1) {
+			File input = new File(filepath);
+			File tempFile = new File(auxFilepath);
+			//reader = new BufferedReader(new FileReader(input));
+			PrintWriter writer = new PrintWriter(new FileWriter(tempFile));
+	
+			String currentLine;
+			
+			for(int i = 1; (currentLine = reader.readLine()) != null; i++)
+				if(i == lineToRemove) continue;
+				else writer.write(currentLine.trim() + System.getProperty("line.separator"));
+			writer.close();
+			input.delete();
+			if(tempFile.renameTo(input)) System.out.println("Rule successfully removed");
+		} else if(!sentences.isEmpty()) sentences.remove(lineToRemove-1);
+		fis.close();
 	}
 	
 	public void askQuestions(Scanner scan) {
@@ -158,6 +159,10 @@ public class Motor {
 			sep = " E ";
 		}
 		System.out.println();
+	}
+	
+	public void close() throws IOException {
+		reader.close();
 	}
 	
 }

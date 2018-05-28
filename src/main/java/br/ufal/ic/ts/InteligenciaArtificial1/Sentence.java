@@ -42,4 +42,19 @@ public class Sentence {
 		return wholeCondition;
 	}
 	
+	@Override
+	public boolean equals(Object obj) {
+	    if (obj == null) {
+	        return false;
+	    }
+	    if (!Sentence.class.isAssignableFrom(obj.getClass())) {
+	        return false;
+	    }
+	    final Sentence other = (Sentence) obj;
+	    if ((this.wholeCondition == null) ? (other.wholeCondition != null) : !this.wholeCondition.equals(other.wholeCondition)) {
+	        return false;
+	    }
+	    return true;
+	}
+	
 }
