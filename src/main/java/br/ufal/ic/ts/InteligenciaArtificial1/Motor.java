@@ -3,11 +3,10 @@ package br.ufal.ic.ts.InteligenciaArtificial1;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -24,28 +23,25 @@ public class Motor {
 	private List<String> atoms = new ArrayList<>();
 	private Set<String> conclusions = new HashSet<>();
 	private BufferedReader reader;
-	private BufferedReader auxReader;
 	
-	public Motor(String filepath) throws FileNotFoundException {
+	public Motor(String filepath) throws IOException {
 		this.filepath = filepath;
 		String[] stringArray = filepath.split("\\.");
-		String auxFilepath;
 		if(stringArray.length == 1) {
 			auxFilepath = stringArray[0] + "Aux";
 		} else {
 			auxFilepath = stringArray[0] + "Aux." + stringArray[1];
 		}
 		reader = new BufferedReader(new FileReader(filepath));
-		auxReader = new BufferedReader(new FileReader(filepath));
 	}
 	
-	public Motor(BufferedReader reader, BufferedReader auxReader) {
+	public Motor(BufferedReader reader) {
+		auxFilepath = System.getProperty("user.dir") + "/testAux.txt";
+		filepath = System.getProperty("user.dir") + "/test.txt";
 		this.reader = reader;
-		this.auxReader = auxReader;
 	}
 	
 	public void listRules() throws IOException {
-		BufferedReader reader = new BufferedReader(new FileReader(filepath));
 		String line = reader.readLine();
 		int i = 1;
 		System.out.println("Rules: ");
@@ -55,10 +51,8 @@ public class Motor {
 			i++;
 		}
 		if(i == 1) System.out.println("No rules found!"); 
-		reader.close();
 	}
 	public void readDatabase() throws IOException {
-		//BufferedReader reader = new BufferedReader(new FileReader(filepath));
 		String line = reader.readLine();
 		Set<String> auxAtoms = new HashSet<>();
 		while(line != null) {
@@ -74,7 +68,6 @@ public class Motor {
 			line = reader.readLine();
 		}
 		atoms.addAll(auxAtoms);
-		reader.close();
 	}
 	
 	public void addRule(Scanner scan) throws IOException {
@@ -94,21 +87,23 @@ public class Motor {
 		System.out.print("Select rule to be removed: ");
 		int lineToRemove = scan.nextInt();
 		scan.nextLine();
-		
-		File input = new File(filepath);
-		File tempFile = new File(auxFilepath);
-		//reader = new BufferedReader(new FileReader(input));
-		PrintWriter writer = new PrintWriter(new FileWriter(tempFile));
-
-		String currentLine;
-
-		for(int i = 1; (currentLine = reader.readLine()) != null; i++)
-			if(i == lineToRemove) continue;
-			else writer.write(currentLine.trim() + System.getProperty("line.separator"));
-		writer.close();
-		reader.close();
-		input.delete();
-		if(tempFile.renameTo(input)) System.out.println("Rule successfully removed");
+		FileInputStream fis = new FileInputStream(filepath);
+		if(fis.read() != -1) {
+			File input = new File(filepath);
+			File tempFile = new File(auxFilepath);
+			//reader = new BufferedReader(new FileReader(input));
+			PrintWriter writer = new PrintWriter(new FileWriter(tempFile));
+	
+			String currentLine;
+			
+			for(int i = 1; (currentLine = reader.readLine()) != null; i++)
+				if(i == lineToRemove) continue;
+				else writer.write(currentLine.trim() + System.getProperty("line.separator"));
+			writer.close();
+			input.delete();
+			if(tempFile.renameTo(input)) System.out.println("Rule successfully removed");
+		} else if(!sentences.isEmpty()) sentences.remove(lineToRemove-1);
+		fis.close();
 	}
 	
 	public void askQuestions(Scanner scan) {
@@ -164,6 +159,10 @@ public class Motor {
 			sep = " E ";
 		}
 		System.out.println();
+	}
+	
+	public void close() throws IOException {
+		reader.close();
 	}
 	
 }

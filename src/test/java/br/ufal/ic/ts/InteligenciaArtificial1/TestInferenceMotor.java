@@ -1,7 +1,7 @@
 package br.ufal.ic.ts.InteligenciaArtificial1;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -16,44 +16,78 @@ import java.util.Scanner;
 
 import org.junit.jupiter.api.Test;
 
-public class TestInferenceMotor
-{
+public class TestInferenceMotor {
+	
    @SuppressWarnings("unchecked")
-@Test
+   @Test
    public void testReadDatabase	() throws IOException, NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
 	   InputStream is = new ByteArrayInputStream("SE a ENTAO b".getBytes());
-	   //Motor.readDatabase(new BufferedReader(new InputStreamReader(is)));
-	   Motor motor = new Motor(new BufferedReader(new InputStreamReader(is)), new BufferedReader(new InputStreamReader(is)));
+	   
+	   Motor motor = new Motor(new BufferedReader(new InputStreamReader(is)));
 	   motor.readDatabase();
+	   
+	   Field f0 = motor.getClass().getDeclaredField("sentences");
+	   f0.setAccessible(true);
+	   List<Sentence> sentences = new ArrayList((ArrayList<Sentence>) f0.get(motor));
+	   List<Sentence> oracle0 = new ArrayList<>();
+	   oracle0.add(new Sentence("a", "b"));
+	   
 	   motor.askQuestions(new Scanner("y")); 
 	   Field f = motor.getClass().getDeclaredField("conclusions");
        f.setAccessible(true);    
        HashSet<String> word = ((HashSet<String>) f.get(motor));
-       
-       word.equals(new HashSet<String>().add("b"));
 
-       //word.forEach(w -> System.out.println(w));
        HashSet<String> oracle = new HashSet<String>();
        oracle.add("b");
        
-       assertEquals(word,(oracle));
+       assertAll(()->{
+    	   assertEquals(1, sentences.size());
+           assertEquals(oracle0.get(0), sentences.get(0));
+           assertEquals(oracle, word);
+       });
        
+       motor.close();
    }
    
+   @SuppressWarnings("unchecked")
    @Test
-   public void testQuantSentences() throws Exception {
+   public void testQuantRules() throws Exception {
 	   InputStream is = new ByteArrayInputStream("SE a ENTAO b\nSE b ENTAO c\nSE c ENTAO d".getBytes());
-	   //Motor.readDatabase(new BufferedReader(new InputStreamReader(is)));
-	   Motor motor = new Motor(new BufferedReader(new InputStreamReader(is)), new BufferedReader(new InputStreamReader(is)));
+
+	   Motor motor = new Motor(new BufferedReader(new InputStreamReader(is)));
 	   motor.readDatabase();
 
 	   Field f = motor.getClass().getDeclaredField("sentences");
-       f.setAccessible(true);    
-       List<Sentence> sentences =(List<Sentence>) f.get(motor);
+       f.setAccessible(true);  
+       List<Sentence> sentences = (List<Sentence>) f.get(motor);
 
        assertEquals(3,sentences.size());
-      
+       motor.close();
 	   
+   }
+   
+   @SuppressWarnings("unchecked")
+   @Test
+   public void testDeleteRule() throws Exception {
+	   InputStream is = new ByteArrayInputStream("SE a ENTAO b\nSE b ENTAO c\nSE c ENTAO d".getBytes());
+
+	   Motor motor = new Motor(new BufferedReader(new InputStreamReader(is)));
+	   motor.readDatabase();
+	   motor.deleteRule(new Scanner("1\n"));
+	   
+	   Field f = motor.getClass().getDeclaredField("sentences");
+       f.setAccessible(true);  
+       List<Sentence> sentences = (ArrayList<Sentence>) f.get(motor);
+       List<Sentence> oracle = new ArrayList<>();
+       oracle.add(new Sentence("b", "c"));
+       oracle.add(new Sentence("c", "d"));
+       
+       assertAll(
+	       () -> assertEquals(2, sentences.size()),
+	       () -> assertEquals(oracle.get(0), sentences.get(0)),
+	       () -> assertEquals(oracle.get(1), sentences.get(1))
+       );
+       motor.close();
    }
 }
  

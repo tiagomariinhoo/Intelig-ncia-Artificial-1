@@ -1,21 +1,11 @@
 package br.ufal.ic.ts.InteligenciaArtificial1;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
+import java.io.IOException;
 import java.util.Scanner;
-import java.util.Set;
 
 public class MainMotor {
 	
-	static final String filepath = "test.txt";
-	static final String auxFilepath = "testAux.txt";
-	static boolean concDisplay = false; 
-	static List<Sentence> sentences = new ArrayList<>();
-	static List<String> atoms = new ArrayList<>();
-	static Set<String> conclusions = new HashSet<>();
+	static boolean concDisplay = false;
 	static Motor motor;
 	
 	public static void main(String[] args) {
@@ -50,8 +40,12 @@ public class MainMotor {
 		        	else System.out.println("Step-by-step conclusions turned on");
 		        	concDisplay = !concDisplay;	
 		        }
-	        } catch (Exception e) {
-	        	System.err.println("Error - Please confirm the data entered is valid and that the file \"test.txt\" exists");
+	        } catch(IOException e){
+	        	System.err.println("Error - File "+ args[0] +" not found");
+	        	System.exit(1);
+	        }
+			catch (Exception e) {
+	        	System.err.println("Error - Please confirm the data entered is valid and that the file "+args[0]+" exists");
 			}
 		}while(answer != 0);
 	}
